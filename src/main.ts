@@ -714,6 +714,23 @@ const bindEvents = (): void => {
     });
   });
 
+  // Delete Match button click (removes match from logs and stats)
+  const deleteMatchBtns = app.querySelectorAll<HTMLButtonElement>('[data-delete-match]');
+  deleteMatchBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const matchId = btn.dataset.deleteMatch;
+      if (matchId && confirm('Are you sure you want to delete this match? This will remove it from both your logs and stats.')) {
+        const matches = getMatches();
+        const statsMatches = getStatsMatches();
+
+        saveMatches(matches.filter(m => m.id !== matchId));
+        saveStatsMatches(statsMatches.filter(m => m.id !== matchId));
+
+        render();
+      }
+    });
+  });
+
   // Cancel edit match modal
   const cancelEditBtn = app.querySelector<HTMLButtonElement>('#cancel-edit-btn');
   if (cancelEditBtn) {
