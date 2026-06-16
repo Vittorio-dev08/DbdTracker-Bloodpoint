@@ -38,7 +38,7 @@
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://vitto-dbd-tracker.github.io/dbdtracker/updater.json"
+        "https://vittorio-dev08.github.io/DBDTracker-BPweb/updater.json"
       ],
       "pubkey": "dW51c2VkX2Zvcl9ub3dfd2Vfd2lsbF9nZW5lcmF0ZV9pdF9sYXRlcg=="
     }
