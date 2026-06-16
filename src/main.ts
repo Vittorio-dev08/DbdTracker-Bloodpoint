@@ -106,6 +106,7 @@ let showSettingsDialog = false; // Settings modal visible state
 let showConfirmClearDialog = false;
 let showConfirmClearLogDialog = false;
 let editingMatchId: string | null = null;
+let deletingMatchId: string | null = null;
 let lastActivePage: AppPage | null = null;
 
 // -------------------------------------------------------------
@@ -374,6 +375,26 @@ const renderConfirmClearLogModal = (): string => {
         <div class="modal-actions">
           <button type="button" id="cancel-clear-log-btn" class="action-btn start" style="background: transparent; border-color: var(--border-color);">Cancel</button>
           <button type="button" id="confirm-clear-log-btn" class="action-btn end">Clear Log</button>
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+const renderConfirmDeleteMatchModal = (): string => {
+  if (!deletingMatchId) {
+    return '';
+  }
+  return `
+    <div class="modal-overlay" style="z-index: 1100;">
+      <div class="modal-content">
+        <h3 class="modal-title">Are you sure?</h3>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 8px 0 16px 0;">
+          Do you really want to delete this match log? This action cannot be undone.
+        </p>
+        <div class="modal-actions">
+          <button type="button" id="cancel-delete-match-btn" class="action-btn start" style="background: transparent; border-color: var(--border-color);">Cancel</button>
+          <button type="button" id="confirm-delete-match-btn" class="action-btn end">Delete</button>
         </div>
       </div>
     </div>
@@ -714,22 +735,43 @@ const bindEvents = (): void => {
     });
   });
 
-  // Delete Match button click (removes match from logs and stats)
+  // Delete Match button click (opens custom confirm modal)
   const deleteMatchBtns = app.querySelectorAll<HTMLButtonElement>('[data-delete-match]');
   deleteMatchBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       const matchId = btn.dataset.deleteMatch;
-      if (matchId && confirm('Are you sure you want to delete this match? This will remove it from both your logs and stats.')) {
-        const matches = getMatches();
-        const statsMatches = getStatsMatches();
-
-        saveMatches(matches.filter(m => m.id !== matchId));
-        saveStatsMatches(statsMatches.filter(m => m.id !== matchId));
-
+      if (matchId) {
+        deletingMatchId = matchId;
         render();
       }
     });
   });
+
+  // Cancel delete match modal
+  const cancelDeleteMatchBtn = app.querySelector<HTMLButtonElement>('#cancel-delete-match-btn');
+  if (cancelDeleteMatchBtn) {
+    cancelDeleteMatchBtn.addEventListener('click', () => {
+      deletingMatchId = null;
+      render();
+    });
+  }
+
+  // Confirm delete match action
+  const confirmDeleteMatchBtn = app.querySelector<HTMLButtonElement>('#confirm-delete-match-btn');
+  if (confirmDeleteMatchBtn) {
+    confirmDeleteMatchBtn.addEventListener('click', () => {
+      if (deletingMatchId) {
+        const matches = getMatches();
+        const statsMatches = getStatsMatches();
+
+        saveMatches(matches.filter(m => m.id !== deletingMatchId));
+        saveStatsMatches(statsMatches.filter(m => m.id !== deletingMatchId));
+
+        deletingMatchId = null;
+        render();
+      }
+    });
+  }
 
   // Cancel edit match modal
   const cancelEditBtn = app.querySelector<HTMLButtonElement>('#cancel-edit-btn');
@@ -831,6 +873,7 @@ const render = (): void => {
       ${renderConfirmClearModal()}
       ${renderConfirmClearLogModal()}
       ${renderEditMatchModal()}
+      ${renderConfirmDeleteMatchModal()}
     </div>
   `;
 
