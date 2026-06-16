@@ -44,6 +44,7 @@ const dashboardCharacters: Array<{ name: string; role: DashboardRole }> = [
   { name: 'The Animatronic', role: 'killer' },
   { name: 'The Krasue', role: 'killer' },
   { name: 'The First', role: 'killer' },
+  { name: 'The Slasher', role: 'killer' },
 
   // Survivors
   { name: 'Dwight Fairfield', role: 'survivor' },
@@ -158,6 +159,7 @@ export function getCharacterImagePath(name: string, role: 'killer' | 'survivor')
     'TheAnimatronic': 'K40',
     'TheKrasue': 'K41',
     'TheFirst': 'K42',
+    'TheSlasher': 'K43',
   };
 
   const survivorPrefixes: Record<string, string> = {
@@ -250,7 +252,8 @@ function matchesCharacterSearch(charName: string, query: string): boolean {
     'the good guy': ['cucky', 'chucky'],
     'the lich': ['vecna'],
     'the dark lord': ['dracula'],
-    'the first': ['vecna', 'henry']
+    'the first': ['vecna', 'henry'],
+    'the slasher': ['jason']
   };
 
   const nameLower = charName.toLowerCase();
